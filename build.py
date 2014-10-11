@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import re, os, sys
+import os, sys
 '''
 This file is used to compile your application and carafe into a single runtime.
 
@@ -17,8 +17,53 @@ controllers = ["controllers/default.c"]
 
 views = ["views/default.html"]
 
-def process_mustache():
-	return None
+warning = '''/* This file is automagically generated, 
+I highly recommend you do not edit directly 
+and instead edit the corresponding view. */'''
+
+''' Args: d = list of declarations, f = list of void functions, 
+	fe = list of functions which return char* , m = string to process.'''
+def process_mustache(d, f, fe, m):
+	#I wish this was a case statement :(
+	if m[0] == "=":
+		fe.append(m[1:].strip())
+		return "{{funce_"+str(len(fe)-1)+"}}"
+	elif m[0] == "d":
+		d.append(m[1:].strip())
+		#declares are removed from the file.
+		return "" 
+	elif m[0] == " ":
+		f.append(m[1:].strip())
+		return "{{func_"+str(len(f)-1)+"}}"
+	else:
+		return "Unknown specifier: " + m[0]
+
+''' Args: d = list of declarations, f = list of void functions,
+	fe = list of functions which return char*, fn = file name for view.'''
+def build_source(d, f, fe, fn):
+	prefix = fn.split("/")[-1].replace(".", "_")
+	fn = fn.replace("/views/", "/_views/") + ".c"
+	w = open(fn, 'w')
+	w.write(warning+"\n\n")
+	w.write("/* Declarations */\n\n")
+	w.write("#include \"carafe.h\"\n\n")
+	#declarations
+	for dec in d:
+		w.write(dec+"\n")
+	w.write("\n/* Void functions */\n\n")
+	#void functions
+	for i in range(0, len(f)):
+		w.write("void " + prefix + "_func" + str(i) + "() {\n")
+		w.write(f[i]+"\n")
+		w.write("}\n\n")
+	w.write("/* Char * functions */\n\n")
+	for i in range(0, len(fe)):
+		w.write("char * " + prefix + "_func" + str(i) + "() {\n")
+		w.write(fe[i]+"\n")
+		w.write("}\n\n")
+	#char * functions 
+	w.close()
+
 
 def compile_view(f):
 	#declarations
@@ -36,8 +81,9 @@ def compile_view(f):
 		if "{{" in cur:
 			match = "" + cur
 			# Read lines until we have a closing tag
-			while (not "}}" in match):
+			while not "}}" in match:
 				temp = r.readline()
+				#test for EOF
 				if (temp == ""):
 					print "Failed to compile view " + f + ": unbalanced {{ }} statement."
 					return -1
@@ -46,15 +92,18 @@ def compile_view(f):
 			#if "{{" in match and  "}}" in match:
 			start = match.index("{{")
 			end = match.index("}}")
-			#Pull out surounds
+			#Pull out surrounds
 			w.write(match[0:start])
-			w.write("{{func_22}}")
+			w.write(process_mustache(decs, funcs, funcse, match[start+2:end]))
 			w.write(match[end+2:])
 			match = match[start:end+2]
-			print match
 		else:
 			w.write(cur)
 		cur = r.readline()
+	print "decs: " + str(decs)
+	print "funcs: " + str(funcs)
+	print "funce: " + str(funcse)
 	w.close()
+	build_source(decs, funcs, funcse, f)
 
 compile_view("./views/default.html")

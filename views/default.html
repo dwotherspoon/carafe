@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>{{= "Test"}}</title>
+		<title>{{= return "Test";}}</title>
 	</head>
 	<body>
-		{{= "This is a multi line
+		{{=  return "This is a multi line
 			tag. Hopefully we can deal
-			with this..."}}
+			with this...";}}
 	</body>
-	{{= "}}
+	{{d int i = 0; }}
+	{{ i++; }}
 </html>
