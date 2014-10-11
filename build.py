@@ -17,10 +17,13 @@ controllers = ["controllers/default.c"]
 
 views = ["views/default.html"]
 
+def process_mustache():
+	return None
+
 def compile_view(f):
 	#declarations
 	decs = list()
-	#just functions
+	#void functions
 	funcs = list()
 	#functions which return char*
 	funcse = list()
@@ -28,8 +31,29 @@ def compile_view(f):
 	r = open(f, "r")
 	w = open(f.replace("/views/", "/_views/"), "w")
 	cur = r.readline()
+	#scan file for mustaches
 	while (cur != ""):
-		w.write(cur)
+		if "{{" in cur:
+			match = "" + cur
+			# Read lines until we have a closing tag
+			while (not "}}" in match):
+				temp = r.readline()
+				if (temp == ""):
+					print "Failed to compile view " + f + ": unbalanced {{ }} statement."
+					return -1
+				else:
+					match += temp
+			#if "{{" in match and  "}}" in match:
+			start = match.index("{{")
+			end = match.index("}}")
+			#Pull out surounds
+			w.write(match[0:start])
+			w.write("{{func_22}}")
+			w.write(match[end+2:])
+			match = match[start:end+2]
+			print match
+		else:
+			w.write(cur)
 		cur = r.readline()
 	w.close()
 
