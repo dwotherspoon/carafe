@@ -10,17 +10,17 @@ int i = 0;
 
 /* Void functions */
 
-void default_html_func0() {
+void default_html_func0(Response * r) {
 i++;
 }
 
 /* Char * functions */
 
-char * default_html_func0() {
+char * default_html_funce0(Response * r) {
 return "Test";
 }
 
-char * default_html_func1() {
+char * default_html_funce1(Response * r) {
 return "This is a multi line
 			tag. Hopefully we can deal
 			with this...";

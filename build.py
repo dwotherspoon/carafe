@@ -27,14 +27,14 @@ def process_mustache(d, f, fe, m):
 	#I wish this was a case statement :(
 	if m[0] == "=":
 		fe.append(m[1:].strip())
-		return "{{funce_"+str(len(fe)-1)+"}}"
+		return "{{funce"+str(len(fe)-1)+"}}"
 	elif m[0] == "d":
 		d.append(m[1:].strip())
 		#declares are removed from the file.
 		return "" 
 	elif m[0] == " ":
 		f.append(m[1:].strip())
-		return "{{func_"+str(len(f)-1)+"}}"
+		return "{{func"+str(len(f)-1)+"}}"
 	else:
 		return "Unknown specifier: " + m[0]
 
@@ -53,12 +53,12 @@ def build_source(d, f, fe, fn):
 	w.write("\n/* Void functions */\n\n")
 	#void functions
 	for i in range(0, len(f)):
-		w.write("void " + prefix + "_func" + str(i) + "() {\n")
+		w.write("void " + prefix + "_func" + str(i) + "(Response * r) {\n")
 		w.write(f[i]+"\n")
 		w.write("}\n\n")
 	w.write("/* Char * functions */\n\n")
 	for i in range(0, len(fe)):
-		w.write("char * " + prefix + "_func" + str(i) + "() {\n")
+		w.write("char * " + prefix + "_funce" + str(i) + "(Response * r) {\n")
 		w.write(fe[i]+"\n")
 		w.write("}\n\n")
 	#char * functions 
