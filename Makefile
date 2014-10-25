@@ -4,7 +4,7 @@ CC=gcc
 EXECNAME=bin/myapp-fcgi
 
 all: main
-	@echo "Carafe built..."
+	@echo "Carafe application built..."
 
 main: $(OBJ)
 	$(CC) $(CFLAGS) -o $(EXECNAME) $(OBJ) -lfcgi
