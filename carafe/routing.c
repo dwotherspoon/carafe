@@ -1,3 +1,6 @@
+#include "../carafe.h"
+#include <stdlib.h>
+#include "routing.h"
 
 Route * routes_head;
 Route * routes_tail;
@@ -11,7 +14,7 @@ Handler route_request(Request * req) {
 	return NULL;
 }
 
-void route_add(char * p, Handler * h) {
+void route_add(char * p, Handler h) {
 	Route * r = malloc(sizeof(Route));
 	r->pattern = p;
 	r->handler = h;

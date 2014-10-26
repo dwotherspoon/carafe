@@ -7,11 +7,15 @@ typedef struct {
 /* Typedef for responses. */
 typedef struct {
 	int i;
-	uint8_t content_type;
+	char * body;
 } Response;
 
 /* Typedef for route handlers (in controllers). */
 typedef void (*Handler)(Request *, Response *);
+
+/* Typedef for view functions... */
+typedef void (*vfunc)(Response *);
+typedef char * (*vfunce)(Response *);
 
 /* Typedef for linked-list of routes. */
 typedef struct _Route {
