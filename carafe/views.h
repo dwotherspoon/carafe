@@ -1,0 +1,1 @@
+void render_view(Request *, Response *);
