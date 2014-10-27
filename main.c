@@ -62,6 +62,6 @@ int main(void) {
 void print_debug(time_t s) {
 	time_t tdiff;
 	puts("Served by Carafe over FastCGI<br />\n\r");
-	printf("Request took %.f secs", difftime(s, time(&tdiff)));
+	printf("Request took %f secs", difftime(s, time(&tdiff)));
 
 }

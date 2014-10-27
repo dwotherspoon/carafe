@@ -22,13 +22,10 @@ I highly recommend you do not edit directly
 and instead edit the corresponding view. */'''
 
 ''' Args: d = list of declarations, f = list of void functions, 
-	fe = list of functions which return char* , m = string to process.'''
-def process_mustache(d, f, fe, m):
+	m = string to process.'''
+def process_mustache(d, f, m):
 	#I wish this was a case statement :(
-	if m[0] == "=":
-		fe.append(m[1:].strip())
-		return "{{funce"+str(len(fe)-1)+"}}"
-	elif m[0] == "d":
+	if m[0] == "d":
 		d.append(m[1:].strip())
 		#declares are removed from the file.
 		return "" 
@@ -40,28 +37,25 @@ def process_mustache(d, f, fe, m):
 
 ''' Args: d = list of declarations, f = list of void functions,
 	fe = list of functions which return char*, fn = file name for view.'''
-def build_source(d, f, fe, fn):
-	prefix = fn.split("/")[-1].replace(".", "_")
-	fn = fn.replace("/views/", "/_views/") + ".c"
-	w = open(fn, 'w')
+def build_source(d, f, fn):
+	prefix = fn.split("/")[-1]
+	fn = fn.replace("/views/", "/_views/")
+	w = open(fn+".c", 'w')
 	w.write(warning+"\n\n")
 	w.write("/* Declarations */\n\n")
-	w.write("#include \"carafe.h\"\n\n")
+	w.write("#include \"../carafe.h\"\n")
+	w.write("#include \""+prefix+".h\"\n")
+	w.write("#include <fcgi_stdio.h>\n\n")
 	#declarations
 	for dec in d:
 		w.write(dec+"\n")
 	w.write("\n/* Void functions */\n\n")
+	prefix = prefix.replace(".", "_")
 	#void functions
 	for i in range(0, len(f)):
 		w.write("void " + prefix + "_func" + str(i) + "(Response * r) {\n")
 		w.write(f[i]+"\n")
 		w.write("}\n\n")
-	w.write("/* Char * functions */\n\n")
-	for i in range(0, len(fe)):
-		w.write("char * " + prefix + "_funce" + str(i) + "(Response * r) {\n")
-		w.write(fe[i]+"\n")
-		w.write("}\n\n")
-	#char * functions 
 	w.close()
 
 
@@ -70,8 +64,6 @@ def compile_view(f):
 	decs = list()
 	#void functions
 	funcs = list()
-	#functions which return char*
-	funcse = list()
 
 	r = open(f, "r")
 	w = open(f.replace("/views/", "/_views/"), "w")
@@ -94,7 +86,7 @@ def compile_view(f):
 			end = match.index("}}")
 			#Pull out surrounds
 			w.write(match[0:start])
-			w.write(process_mustache(decs, funcs, funcse, match[start+2:end]))
+			w.write(process_mustache(decs, funcs, match[start+2:end]))
 			w.write(match[end+2:])
 			match = match[start:end+2]
 		else:
@@ -102,8 +94,10 @@ def compile_view(f):
 		cur = r.readline()
 	print "decs: " + str(decs)
 	print "funcs: " + str(funcs)
-	print "funce: " + str(funcse)
 	w.close()
-	build_source(decs, funcs, funcse, f)
+	build_source(decs, funcs, f)
 
-compile_view("./views/default.html")
+def create_manifest(f):
+	print "..."
+
+compile_view("./views/default2.html")
