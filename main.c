@@ -2,6 +2,7 @@
 #include <fcgi_stdio.h>
 #include <stdlib.h>
 #include <Judy.h>
+#include <time.h>
 #include "carafe.h"
 #include "carafe/routing.h"
 #include "carafe/views.h"
@@ -26,9 +27,11 @@ int main(void) {
 	int i;
 	char buf[256];
 	char * res;
+	time_t tstart;
 	setup();
 	/* request loop */
 	while (FCGI_Accept() >= 0) {
+		time(&tstart);
 		/*
 		build_request();
 		route_request();
@@ -51,11 +54,14 @@ int main(void) {
 		//printf("JUDY: %s", verb); */
 		render_view(NULL, r);
 
-		print_debug();
+		print_debug(tstart);
 	}
 	return -1;
 }
 
-void print_debug(void) {
+void print_debug(time_t s) {
+	time_t tdiff;
 	puts("Served by Carafe over FastCGI<br />\n\r");
+	printf("Request took %.f secs", difftime(s, time(&tdiff)));
+
 }
