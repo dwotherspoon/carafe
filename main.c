@@ -5,7 +5,6 @@
 #include "carafe.h"
 #include "carafe/routing.h"
 #include "carafe/views.h"
-#include "_views/manifest.h"
 
 /* http://judy.sourceforge.net/downloads/index.html */
 /* http://www.aprelium.com/data/doc/2/abyssws-win-doc-html/cgivars.html */
@@ -39,7 +38,6 @@ int main(void) {
 
 		gets(buf);
 		puts("Content-type: text/html\n\n");
-
 		/*
 		puts("<form action='' method='post'>");
 			puts("<input type='text' name='test' />");
@@ -60,5 +58,5 @@ int main(void) {
 
 void print_debug(void) {
 	puts("Served by Carafe over FastCGI<br />\n\r");
-	printf("%lu views avaliable<br />\n\r", sizeof(view_names)/sizeof(void *));
+	//printf("%lu views avaliable<br />\n\r", sizeof(view_names)/sizeof(void *));
 }
