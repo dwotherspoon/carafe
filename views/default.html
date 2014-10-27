@@ -1,13 +1,11 @@
 <!DOCTYPE html>
+{{d int i = 0; }}
 <html lang="en">
 	<head>
-		<title>{{= return "Test";}}</title>
+		<title>{{ printf("i %d", i++); }}</title>
 	</head>
 	<body>
-		{{=  return "This is a multi line
-			tag. Hopefully we can deal
-			with this...";}}
+		{{ printf("i %d", i++); }}
 	</body>
-	{{d int i = 0; }}
-	{{ i++; }}
+	{{ printf("i %d", i++); }}
 </html>

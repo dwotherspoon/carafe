@@ -15,7 +15,7 @@ typedef void (*Handler)(Request *, Response *);
 
 /* Typedef for view functions... */
 typedef void (*vfunc)(Response *);
-typedef char * (*vfunce)(Response *);
+typedef void (*gcfunc)(void);
 
 /* Typedef for linked-list of routes. */
 typedef struct _Route {
@@ -23,3 +23,12 @@ typedef struct _Route {
 	Handler handler;
 	struct _Route * next;
 } Route;
+
+
+/* Typedef for views and associated functions */
+typedef struct {
+	char * name;
+	char * body;
+	vfunc * vfuncs;
+	gcfunc cleanup;
+} View;

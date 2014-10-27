@@ -2,16 +2,12 @@
 I highly recommend you do not edit directly 
 and instead edit the corresponding view. */
 
-/* Void functions */
+/* View functions */
 
 void default_html_func0(Response *);
-/* Char * functions */
 
-char * default_html_funce0(Response *);
+void default_html_func1(Response *);
 
-char * default_html_funce1(Response *);
+void default_html_func2(Response *);
 
-/* Tables */
-extern vfunc default_html_funcs[];
-
-extern vfunce default_html_funces[]; 
+extern vfunc default_html_vfuncs[];

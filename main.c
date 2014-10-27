@@ -17,7 +17,7 @@ Response * r = NULL;
 void setup(void) {
 	void * v = verb;
 	/* Load views into memory */
-	load_views(); 
+	//load_views(); 
 	JSLI(v, arry, "HTTP_VERB");	
 	r = malloc(sizeof(Response));
 }
@@ -35,9 +35,9 @@ int main(void) {
 		build_response();
 		send_response();
 		*/
-
 		gets(buf);
 		puts("Content-type: text/html\n\n");
+		load_views();
 		/*
 		puts("<form action='' method='post'>");
 			puts("<input type='text' name='test' />");
@@ -58,5 +58,4 @@ int main(void) {
 
 void print_debug(void) {
 	puts("Served by Carafe over FastCGI<br />\n\r");
-	//printf("%lu views avaliable<br />\n\r", sizeof(view_names)/sizeof(void *));
 }
