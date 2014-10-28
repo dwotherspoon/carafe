@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <Judy.h>
 #include <time.h>
+#include <string.h>
 #include "carafe.h"
 #include "carafe/routing.h"
 #include "carafe/views.h"
@@ -10,17 +11,36 @@
 /* http://judy.sourceforge.net/downloads/index.html */
 /* http://www.aprelium.com/data/doc/2/abyssws-win-doc-html/cgivars.html */
 extern char **environ;
-void * arry = NULL;
-char verb[] = "POSTGETETC";
 Response * r = NULL;
 
 /* Bootstrap your routes in here */
 void setup(void) {
-	void * v = verb;
 	/* Load views into memory */
-	//load_views(); 
-	JSLI(v, arry, "HTTP_VERB");	
+	load_views(); 
 	r = malloc(sizeof(Response));
+}
+
+Request * build_request() {
+	int i, l;
+	void * v;
+	char * key, * value;
+	Request * r = malloc(sizeof(Request));
+	r->vars = NULL;
+	/* Populate the Environment vars */
+	for (i = 0; environ[i]; i++) {
+		value = environ[i];
+		/* Find the start of the key */
+		while (*value != '=') { value++; }
+		l = value - environ[i];
+		key = malloc(sizeof(char) * l + 1);
+		strncpy(key, environ[i], l);
+		key[l] = '\0';
+		value++;	
+		v = value;
+		JSLI(v, r->vars, key);	
+		printf("%s =  %s<br />", key, value);
+	}
+	return r;
 }
 
 int main(void) {
@@ -40,7 +60,7 @@ int main(void) {
 		*/
 		gets(buf);
 		puts("Content-type: text/html\n\n");
-		load_views();
+		build_request();
 		/*
 		puts("<form action='' method='post'>");
 			puts("<input type='text' name='test' />");

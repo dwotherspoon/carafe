@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <unistd.h>
 #include <limits.h>
 #include <string.h>
 #include <fcgi_stdio.h>
@@ -41,8 +42,8 @@ void load_views(void) {
 	free(buf);
 }
 
-/* Function to workout what to do with mustaches */
-void process_mustache(char * start, int len) {
+/* Function to workout what to do with moustaches */
+void process_moustache(char * start, int len) {
 	int fnum = atoi(start + 4);
 	(*views[0].vfuncs[fnum])(NULL);
 }
@@ -56,7 +57,7 @@ void render_view(Request * req, Response * res) {
 	while (cur) {
 		close = strstr(cur, "}}");
 		/* Next moustache */
-		process_mustache(cur + 2, close - cur - 2);
+		process_moustache(cur + 2, close - cur - 2);
 		cur = strstr(cur + 2, "{{");
 		close += 2;
 		/* More moustaches, or EOF? */
@@ -66,5 +67,9 @@ void render_view(Request * req, Response * res) {
 		else {
 			puts(close);
 		}
+	}
+	/* Does this view have a cleanup function defined? */
+	if (views[0].cleanup != NULL) {
+		(*views[0].cleanup)();
 	}
 }

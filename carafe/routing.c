@@ -14,7 +14,7 @@ Handler route_request(Request * req) {
 	return NULL;
 }
 
-void route_add(char * p, Handler h) {
+void route_add(char * p, Handler h, int methods) {
 	Route * r = malloc(sizeof(Route));
 	r->pattern = p;
 	r->handler = h;

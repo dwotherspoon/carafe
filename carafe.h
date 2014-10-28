@@ -2,6 +2,7 @@
 /* Typedef for requests. */
 typedef struct {
 	int i;
+	void * vars;
 } Request;
 
 /* Typedef for responses. */
@@ -20,10 +21,10 @@ typedef void (*gcfunc)(void);
 /* Typedef for linked-list of routes. */
 typedef struct _Route {
 	char * pattern;
+	int methods;
 	Handler handler;
 	struct _Route * next;
 } Route;
-
 
 /* Typedef for views and associated functions */
 typedef struct {

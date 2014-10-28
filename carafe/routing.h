@@ -1,1 +1,1 @@
-void route_add(char *, Handler);
+void route_add(char *, Handler, int);
