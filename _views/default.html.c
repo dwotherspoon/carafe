@@ -19,12 +19,12 @@ int i = 0;
 /* Void functions */
 
 void default_html_func0(Response * r) {
-	printf("i %d", i++);
+	puts("Carafe Test Page");
 }
 
 
 void default_html_func1(Response * r) {
-	puts("default_html_func1");
+	printf("Hit: %d<br />\n", ++i);
 }
 
 void default_html_func2(Response * r) {

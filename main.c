@@ -13,16 +13,17 @@
 extern char **environ;
 Response * r = NULL;
 
+char a[] = "TEST";
+
 /* Bootstrap your routes in here */
 void setup(void) {
 	/* Load views into memory */
 	load_views(); 
-	r = malloc(sizeof(Response));
 }
 
 Request * build_request() {
 	int i, l;
-	void * v;
+	void ** v;
 	char * key, * value;
 	Request * r = malloc(sizeof(Request));
 	r->vars = NULL;
@@ -36,9 +37,8 @@ Request * build_request() {
 		strncpy(key, environ[i], l);
 		key[l] = '\0';
 		value++;	
-		v = value;
 		JSLI(v, r->vars, key);	
-		printf("%s =  %s<br />", key, value);
+		*v = value;
 	}
 	return r;
 }
@@ -48,6 +48,7 @@ int main(void) {
 	char buf[256];
 	char * res;
 	time_t tstart;
+	Request * req;
 	setup();
 	/* request loop */
 	while (FCGI_Accept() >= 0) {
@@ -60,7 +61,7 @@ int main(void) {
 		*/
 		gets(buf);
 		puts("Content-type: text/html\n\n");
-		build_request();
+		req = build_request();
 		/*
 		puts("<form action='' method='post'>");
 			puts("<input type='text' name='test' />");
@@ -72,16 +73,28 @@ int main(void) {
 		printf("Input:<br />\n%s", buf);
 		//JSLG(res, arry, "HTTP_VERB");
 		//printf("JUDY: %s", verb); */
-		render_view(NULL, r);
+		render_view(req, r);
 
-		print_debug(tstart);
+		print_debug(req);
+		/* GC from this request */
+		JSLFA( i , req->vars);
+		free(req);
 	}
 	return -1;
 }
 
-void print_debug(time_t s) {
+void print_debug(Request * req) {
+	char sstr[256] = {'\0'};
+	char ** val = NULL;
 	time_t tdiff;
-	puts("Served by Carafe over FastCGI<br />\n\r");
-	printf("Request took %f secs", difftime(s, time(&tdiff)));
+	puts("<div id=\"carafe-debug\">\nServed by Carafe over FastCGI<br />\n\r");
+	//printf("Request took %f secs", difftime(s, time(&tdiff)));
+	JSLF(val, req->vars, sstr);
+	while (val != NULL) {
+		printf("{ %s => %s }<br />\n", sstr, *val);	
+		JSLN(val, req->vars, sstr);
+	}
+	puts("</div>");
+
 
 }
