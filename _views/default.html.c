@@ -30,4 +30,3 @@ void default_html_func1(Response * r) {
 void default_html_func2(Response * r) {
 	puts("default_html_func2");
 }
-

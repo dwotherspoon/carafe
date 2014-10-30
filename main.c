@@ -4,6 +4,7 @@
 #include <Judy.h>
 #include <time.h>
 #include <string.h>
+#include <assert.h>
 #include "carafe.h"
 #include "carafe/routing.h"
 #include "carafe/views.h"
@@ -13,12 +14,15 @@
 extern char **environ;
 Response * r = NULL;
 
-char a[] = "TEST";
+void handler_404(Request * req, Response * res) {
+	puts("OKAY MOTO");
+}
 
 /* Bootstrap your routes in here */
 void setup(void) {
 	/* Load views into memory */
-	load_views(); 
+	load_views();
+	route_add("/carafe/404", &handler_404, 0);
 }
 
 Request * build_request() {
@@ -36,11 +40,23 @@ Request * build_request() {
 		key = malloc(sizeof(char) * l + 1);
 		strncpy(key, environ[i], l);
 		key[l] = '\0';
-		value++;	
-		JSLI(v, r->vars, key);	
+		value++;
+		JSLI(v, r->vars, key);
 		*v = value;
 	}
 	return r;
+}
+
+void print_debug(Request * req) {
+	char sstr[256] = {'\0'};
+	char ** val = NULL;
+	puts("<div id=\"carafe-debug\">\nServed by Carafe over FastCGI<br />\n\r");
+	JSLF(val, req->vars, sstr);
+	while (val != NULL) {
+		printf("{ %s => %s }<br />\n", sstr, *val);
+		JSLN(val, req->vars, sstr);
+	}
+	puts("</div>");
 }
 
 int main(void) {
@@ -49,6 +65,7 @@ int main(void) {
 	char * res;
 	time_t tstart;
 	Request * req;
+	Handler h;
 	setup();
 	/* request loop */
 	while (FCGI_Accept() >= 0) {
@@ -62,6 +79,13 @@ int main(void) {
 		gets(buf);
 		puts("Content-type: text/html\n\n");
 		req = build_request();
+		h = route_request(req);
+		if (h != NULL) {
+			(*h)(req, r);
+		}
+		else {
+			render_view(req, r);
+		}
 		/*
 		puts("<form action='' method='post'>");
 			puts("<input type='text' name='test' />");
@@ -73,28 +97,11 @@ int main(void) {
 		printf("Input:<br />\n%s", buf);
 		//JSLG(res, arry, "HTTP_VERB");
 		//printf("JUDY: %s", verb); */
-		render_view(req, r);
 
 		print_debug(req);
-		/* GC from this request */
+		/* Do GC from this request */
 		JSLFA( i , req->vars);
 		free(req);
 	}
 	return -1;
-}
-
-void print_debug(Request * req) {
-	char sstr[256] = {'\0'};
-	char ** val = NULL;
-	time_t tdiff;
-	puts("<div id=\"carafe-debug\">\nServed by Carafe over FastCGI<br />\n\r");
-	//printf("Request took %f secs", difftime(s, time(&tdiff)));
-	JSLF(val, req->vars, sstr);
-	while (val != NULL) {
-		printf("{ %s => %s }<br />\n", sstr, *val);	
-		JSLN(val, req->vars, sstr);
-	}
-	puts("</div>");
-
-
 }
