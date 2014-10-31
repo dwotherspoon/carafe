@@ -18,11 +18,11 @@ void handler_404(Request * req, Response * res) {
 	puts("OKAY MOTO");
 }
 
-/* Bootstrap your routes in here */
 void setup(void) {
 	/* Load views into memory */
 	load_views();
-	route_add("/carafe/404", &handler_404, 0);
+	/* Bootstrap your routes in here (First is first to be matched)*/
+	route_add("/carafe/404", &handler_404, GET | UNLINK);
 }
 
 Request * build_request() {
@@ -43,6 +43,8 @@ Request * build_request() {
 		value++;
 		JSLI(v, r->vars, key);
 		*v = value;
+		/* We can free this because Judy copies it */
+		free(key);
 	}
 	return r;
 }
@@ -63,13 +65,11 @@ int main(void) {
 	int i;
 	char buf[256];
 	char * res;
-	time_t tstart;
 	Request * req;
 	Handler h;
 	setup();
 	/* request loop */
 	while (FCGI_Accept() >= 0) {
-		time(&tstart);
 		/*
 		build_request();
 		route_request();
@@ -86,17 +86,6 @@ int main(void) {
 		else {
 			render_view(req, r);
 		}
-		/*
-		puts("<form action='' method='post'>");
-			puts("<input type='text' name='test' />");
-		puts("</form>");
-
-		for (i = 0; environ[i]; i++) {
-			printf("%s<br />\n", environ[i]);
-		}
-		printf("Input:<br />\n%s", buf);
-		//JSLG(res, arry, "HTTP_VERB");
-		//printf("JUDY: %s", verb); */
 
 		print_debug(req);
 		/* Do GC from this request */
