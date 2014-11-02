@@ -1,8 +1,8 @@
-#include "../carafe.h"
 #include <stdlib.h>
 #include <Judy.h>
 #include <fcgi_stdio.h>
 #include <assert.h>
+#include "../carafe.h"
 #include "routing.h"
 
 
@@ -11,9 +11,8 @@ Route * routes_tail;
 
 /* Hopefully this parses to a jump table for some speed */
 int parse_method(char * method) {
-	int m = (method[0] << 0x10) | (method[1] << 0x08) | (method[2]);
-	/* Be fast, only check first three chars */
-	switch (m) {
+	/* Be fast, only check first three chars, 16bit processors need not apply */
+	switch ((method[0] << 0x10) | (method[1] << 0x08) | (method[2])) {
 		case 0x474554:
 			return GET;
 			break;

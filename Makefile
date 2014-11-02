@@ -1,5 +1,5 @@
-CFLAGS=-Wall -Wextra -Wpedantic -O0 -c
-OBJ=main.o _views/manifest.o carafe/routing.o carafe/views.o _views/default.html.o 
+CFLAGS=-Wall -Wextra -Wpedantic -O0
+OBJ=main.o _views/manifest.o carafe/routing.o carafe/views.o _views/default.html.o
 CC=gcc
 EXECNAME=bin/myapp-fcgi
 
