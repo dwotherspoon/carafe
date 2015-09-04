@@ -3,9 +3,9 @@
 #include <limits.h>
 #include <string.h>
 #include <fcgi_stdio.h>
-#include "../carafe.h"
+#include <carafe.h>
 #include "../_views/manifest.h"
-#include "views.h"
+#include <views.h>
 
 /* Load views into memory for speed */
 void load_views(void) {
@@ -13,7 +13,7 @@ void load_views(void) {
 	FILE *fp;
 	long sz;
 	size_t pEnd, nLen;
-	char * buf = malloc(PATH_MAX * sizeof(char));
+	char buf[PATH_MAX];
 
 	populate_views();
 	getcwd(buf, PATH_MAX);
@@ -39,7 +39,6 @@ void load_views(void) {
 		fread(views[i].body, sizeof(char), sz, fp);
 		fclose(fp);
 	}
-	free(buf);
 }
 
 /* Function to workout what to do with moustaches */

@@ -8,6 +8,7 @@ typedef struct {
 /* Typedef for responses. */
 typedef struct {
 	int i;
+	void * headers;
 	char * body;
 } Response;
 
@@ -35,14 +36,14 @@ typedef struct {
 } View;
 
 /* Defines for HTTP methods */
-#define GET			1
-#define POST		2
-#define PUT			4
-#define PATCH		8
-#define DELETE 	16
-#define COPY		32
-#define HEAD 		64
-#define OPTIONS 128
-#define LINK 		256
-#define UNLINK 	512
-#define PURGE		1024
+#define GET			0x1
+#define POST		0x2
+#define PUT			0x4
+#define PATCH		0x8
+#define DELETE 		0x10
+#define COPY		0x20
+#define HEAD 		0x40
+#define OPTIONS 	0x80
+#define LINK 		0x100
+#define UNLINK 		0x200
+#define PURGE		0x400

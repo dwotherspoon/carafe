@@ -19,7 +19,7 @@ Requires libfcgi-dev and libjudy-dev.
 
 Hosting
 -----
-My recommended web server for hosting is lighttpd. Below is an example configuration:
+My recommended web server for hosting is lighttpd. Below is an example configuration (you will need to enable mod_rewrite and mod_fastcgi):
 
   url.rewrite-once = ("^/carafe/(.+)$" => "/carafe/")
 
@@ -30,4 +30,5 @@ My recommended web server for hosting is lighttpd. Below is an example configura
     ))
   )
 
+Note that the carafe folder must exist or you'll just get a 404 error.
 If you don't want to enable mod_rewrite, setting the server.error-handler-404 to the path carafe is being served on is equivalent.

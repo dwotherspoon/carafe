@@ -2,16 +2,15 @@
 #include <Judy.h>
 #include <fcgi_stdio.h>
 #include <assert.h>
-#include "../carafe.h"
-#include "routing.h"
+#include <carafe.h>
+#include <routing.h>
 
 
 Route * routes_head;
 Route * routes_tail;
 
-/* Hopefully this parses to a jump table for some speed */
 int parse_method(char * method) {
-	/* Be fast, only check first three chars, 16bit processors need not apply */
+	/* Be fast, only check first three chars */
 	switch ((method[0] << 0x10) | (method[1] << 0x08) | (method[2])) {
 		case 0x474554:
 			return GET;
