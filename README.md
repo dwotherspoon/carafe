@@ -1,9 +1,9 @@
 Carafe
 ======
 
-A C web framework, or at least some part of one.
+A C web framework, or at least some parts of one.
 
-Compiles to a FastCGI application, using LibJudy for associative arrays.
+Compiles down to a FastCGI application, includes a simple hash table implementation.
 
 Views
 -----
@@ -15,7 +15,7 @@ TBD, no wild card matching or parameterisation yet...
 
 Building
 -----
-Requires libfcgi-dev and libjudy-dev.
+Requires libfcgi-dev.
 
 Hosting
 -----

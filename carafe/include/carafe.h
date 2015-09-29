@@ -1,14 +1,18 @@
+#include <lib/hashtable.h>
+
+#ifndef CARAFE_H
+#define CARAFE_H
 
 /* Typedef for requests. */
 typedef struct {
 	int i;
-	void * vars;
+	HashTable vars;
 } Request;
 
 /* Typedef for responses. */
 typedef struct {
 	int i;
-	void * headers;
+	HashTable headers;
 	char * body;
 } Response;
 
@@ -19,14 +23,6 @@ typedef void (*Handler)(Request *, Response *);
 typedef void (*vfunc)(Response *);
 typedef void (*gcfunc)(void);
 
-/* Typedef for linked-list of routes. */
-typedef struct _Route {
-	char * pattern;
-	int methods;
-	Handler handler;
-	struct _Route * next;
-} Route;
-
 /* Typedef for views and associated functions */
 typedef struct {
 	char * name;
@@ -36,14 +32,16 @@ typedef struct {
 } View;
 
 /* Defines for HTTP methods */
-#define GET			0x1
-#define POST		0x2
-#define PUT			0x4
-#define PATCH		0x8
-#define DELETE 		0x10
-#define COPY		0x20
-#define HEAD 		0x40
-#define OPTIONS 	0x80
-#define LINK 		0x100
-#define UNLINK 		0x200
-#define PURGE		0x400
+#define GET			1 << 0
+#define POST		1 << 1
+#define PUT			1 << 2
+#define PATCH		1 << 3
+#define DELETE 		1 << 4
+#define COPY		1 << 4
+#define HEAD 		1 << 5
+#define OPTIONS 	1 << 6
+#define LINK 		1 << 7
+#define UNLINK 		1 << 8
+#define PURGE		1 << 9
+
+#endif
