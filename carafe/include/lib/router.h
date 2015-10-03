@@ -1,9 +1,8 @@
 #include <carafe.h>
 
-
 typedef struct route_child_t {
 	struct route_t *pRoute;
-	struct route_child_t *pNext;      
+	struct route_child_t *pNext;     
 } RouteChild;
 
 

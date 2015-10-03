@@ -121,75 +121,133 @@ void route_debug(Route *root, int level) {
 	}
 }
 
-/* TODO: Maintain priority queue, constant has highest priority, @ param next and then wildcard. */
+/* Return priority of match/section */
+int route_priority(char * str) {
+	if (!str) {
+		return 0;
+	}
+	else if (str[0] == '*' && str[1] == '\0') {
+		/* Wildcard */
+		return 3;
+	}
+	else if (str[0] == '@' && str[1] == '\0') {
+		/* Parameter */
+		return 2;
+	}
+	else {
+		/* Constant */
+		return 1;
+	}
+}
+
 void route_add(Route *root, const char *path, Handler handler, int methods) {
 	const char *cursor = path, *cursor_next;
 	char *section;
 	Route *pRoute = root;
-	RouteChild *pChild;
-	int action, len;
+	RouteChild *pChild, *pTemp;
+	int len, action, priority;
 
-	puts("route_add");
+	puts("route_add:");
 	while (*cursor) {
+		/* Skip slash. */
 		if (*cursor == '/') {
 			cursor++;
 		}
-		/* Find start of next section */
+		/* Find start of next section (cursor_next). */
 		cursor_next = cursor;
 		for (; *cursor_next && *cursor_next != '/'; cursor_next++);
 		len = cursor_next - cursor;
-		/* +1 for EOS marker */
+
+		if (len == 1 && cursor[0] == '*' && cursor[1] != '\0') {
+			puts("WARNING: Wildcard not at end of route.");
+		}
+
+		/* +1 for \0 marker. */
 		section = malloc((len + 1) * sizeof(char));
 		section[len] = '\0';
 		memcpy(section, cursor, len * sizeof(char));
-		printf("Section: %s(len %d)\n", section, len);
+		
+		priority = route_priority(section);
+		printf("Section: %s -  Pri: %i\n", section, priority);
 
 		pChild = pRoute->pChildren;
-		action = 0;
-		/* 0 = search/empty, 1 = found, 2 = not found */
+
+
+		/* Check head first, may need to insert before head. */
+		action = (pChild && priority < route_priority(pChild->pRoute->match)) ? 1 : 0;
+
+		if (pChild) {
+			printf("Head: %s, Pri: %i\n", pChild->pRoute->match, route_priority(pChild->pRoute->match));
+		}
+
+		/* Search for match or last item at desired priority order. */
 		while (!action && pChild) {
-			/* Check this doesn't break for prefixes */
-			if (!strncmp(pChild->pRoute->match, section, len + 1)) {
-				action = 1;
-			}
-			else if (!pChild->pNext) {
-				/* No next child, stop. */
+			if (priority == route_priority(pChild->pRoute->match) && strcmp(section, pChild->pRoute->match) == 0) {
+				/* Matched */
 				action = 2;
 			}
+			else if (!pChild->pNext) {
+				/* End of list reached */
+				action = 3;
+			}
+			else if (priority < route_priority(pChild->pNext->pRoute->match)) {
+				/* Next item has higher priority, insert after current. */
+				action = 3;
+			}
 			else {
+				/* Move to next */
 				pChild = pChild->pNext;
 			}
 		}
 
-		if (action == 1) {
-			puts("Found match...");
-			/* Free the section string, we don't need it. */
-			free(section);
-			/* Follow node */
-			pRoute = pChild->pRoute;
-		}
-		else {
-			puts("Adding new child...");
-			if (!action) {
-				puts("List is empty");
-				/* Empty list */
-				pRoute->pChildren = malloc(sizeof(RouteChild));
-				pChild = pRoute->pChildren;
-			}
-			else {
-				/* Non-empty list */
-				pChild->pNext = malloc(sizeof(RouteChild));
-				pChild = pChild->pNext;
-			}
-			pChild->pNext = NULL;
-			pChild->pRoute = malloc(sizeof(Route));
-			pRoute = pChild->pRoute;
-			pRoute->pChildren = NULL;
-			pRoute->match = section;
+		switch (action) {
+			case 0:
+				/* Empty list. */
+				puts("route_add: Action - Insert into empty list.");
+				pChild = malloc(sizeof(RouteChild));
+				pRoute->pChildren = pChild;
+				pChild->pNext = NULL;
+				pRoute = malloc(sizeof(Route));
+				pChild->pRoute = pRoute;
+				pRoute->match = section;
+				pRoute->pChildren = NULL;
+				pRoute->handler = NULL;
+				break;
+			case 1:
+				/* Insert at head - non-empty. */
+				puts("route_add: Action - Insert at head.");
+				pChild = malloc(sizeof(RouteChild));
+				pChild->pNext = pRoute->pChildren;
+				pRoute->pChildren = pChild;
+				pRoute = malloc(sizeof(Route));
+				pChild->pRoute = pRoute;
+				pRoute->match = section;
+				pRoute->pChildren = NULL;
+				pRoute->handler = NULL;
+				break;
+			case 2:
+				/* Matched */
+				puts("route_add: Action - Matched.");
+				pRoute = pChild->pRoute;
+				free(section);
+				break;
+			case 3:
+				/* Insert after. */
+				puts("route_add: Action - Insert after.");
+				pTemp =  malloc(sizeof(RouteChild));
+				pTemp->pNext = pChild->pNext;
+				pChild->pNext = pTemp;
+				pRoute = malloc(sizeof(Route));
+				pChild->pRoute =  pRoute;
+				pRoute->match = section;
+				pRoute->pChildren = NULL;
+				pRoute->handler = NULL;
+				break;
+			default:
+				break;
 		}
 		cursor = cursor_next;
+		pRoute->handler = handler;
+		pRoute->methods = methods;
 	}
-	/* Add handler to final node. */
-	pRoute->handler = handler;
-	pRoute->methods = methods;
 }

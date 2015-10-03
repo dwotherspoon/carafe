@@ -11,7 +11,6 @@
 #include <views.h>
 #include <log.h>
 
-/* http://judy.sourceforge.net/downloads/index.html */
 /* http://www.aprelium.com/data/doc/2/abyssws-win-doc-html/cgivars.html */
 extern char **environ;
 FILE * pLog;
@@ -30,7 +29,8 @@ void setup(void) {
 	route_init(&root);
 	route_add(&root, "/carafe/home", &handler_404, GET | POST);
 	route_add(&root, "/carafe/blog/new", &handler_404, GET | POST);
-	route_add(&root, "/carafe/blog/@id", &handler_404, GET | POST);
+	route_add(&root, "/carafe/blog/@", &handler_404, GET | POST);
+	route_add(&root, "/carafe/blog/*", &handler_404, GET | POST);
 	route_add(&root, "/carafe/*", &handler_404, GET | POST);
 	/* Bootstrap your routes in here (First is first to be matched)*/
 	//route_add("/carafe/404", &handler_404, GET | UNLINK);
