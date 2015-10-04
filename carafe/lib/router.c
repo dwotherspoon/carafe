@@ -147,7 +147,7 @@ void route_add(Route *root, const char *path, Handler handler, int methods) {
 	RouteChild *pChild, *pTemp;
 	int len, action, priority;
 
-	puts("route_add:");
+	printf("route_add (%s):\n", path);
 	while (*cursor) {
 		/* Skip slash. */
 		if (*cursor == '/') {
@@ -238,7 +238,7 @@ void route_add(Route *root, const char *path, Handler handler, int methods) {
 				pTemp->pNext = pChild->pNext;
 				pChild->pNext = pTemp;
 				pRoute = malloc(sizeof(Route));
-				pChild->pRoute =  pRoute;
+				pTemp->pRoute = pRoute;
 				pRoute->match = section;
 				pRoute->pChildren = NULL;
 				pRoute->handler = NULL;
@@ -247,7 +247,7 @@ void route_add(Route *root, const char *path, Handler handler, int methods) {
 				break;
 		}
 		cursor = cursor_next;
-		pRoute->handler = handler;
-		pRoute->methods = methods;
 	}
+	pRoute->handler = handler;
+	pRoute->methods = methods;
 }
