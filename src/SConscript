@@ -1,0 +1,11 @@
+sources = [
+	'lib/hashtable.c',
+	'lib/router.c'
+]
+
+Import('env')
+
+env['CFLAGS'].append('-I'+Dir('include').abspath)
+
+objects =  map(env.Object, sources)
+
